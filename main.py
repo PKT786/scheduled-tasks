@@ -3,8 +3,8 @@ import datetime as dt
 import smtplib
 import pandas
 import random
-my_email = MY_EMAIL
-password = MY_PASSWORD
+MY_EMAIL = os.environ.get("MY_EMAIL")
+MY_PASSWORD = os.environ.get("MY_PASSWORD")
 PLACEHOLDER_NAME = "[NAME]"
 ##################### Extra Hard Starting Project ######################
 
