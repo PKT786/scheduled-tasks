@@ -1,46 +1,38 @@
-import os
-import datetime as dt
-import smtplib
-import pandas
-import random
-MY_EMAIL = os.environ.get("MY_EMAIL")
-MY_PASSWORD = os.environ.get("MY_PASSWORD")
-PLACEHOLDER_NAME = "[NAME]"
-##################### Extra Hard Starting Project ######################
+import requests
+from twilio.rest import Client
 
-# 1. Update the birthdays.csv
+api_key = "fbfd342fd71a2b812373fab83bbf472a"
+MY_LANG= 80.9167
+MY_LAT = 26.85
+URL = "https://api.openweathermap.org/data/2.5/forecast"
 
-# 2. Check if today matches a birthday in the birthdays.csv
+account_sid = "AC17ed1e656347addc72617b44e02f52de"
+auth_token = "91b2b4c572a6e732b1a6f4cd0dbea272"
 
-now = dt.datetime.now()
-print(now.day)
+parameters = {
+        "lat": MY_LAT,
+        "lon": MY_LANG,
+        "appid": api_key,
+        "cnt": 4,
+}
 
-data = pandas.read_csv("birthdays.csv")
-birthday_data = data.to_dict(orient="records")
-print(birthday_data)
+response = requests.get(url = URL, params = parameters)
+response.raise_for_status()
+response = response.json()
 
-for birthday in birthday_data:
-    if now.day == int(birthday["day"]) and now.month == int(birthday["month"]):
-       print(birthday["day"], birthday["month"], birthday["name"])
-# 3. If step 2 is true, pick a random letter from letter templates and replace the [NAME] with the person's actual name from birthdays.csv
-       random_num = random.randint(1, 3)
-       with open(f"letter_templates/letter_{random_num}.txt") as file:
-           file_data = file.read()
-           print(file_data)
+will_rain = False
+for hour_data in response["list"]:
+   id_code = hour_data["weather"][0]["id"]
+   print(type(id_code))
+   if id_code <= 800:
+      will_rain = True
+if will_rain:
+    client = Client(account_sid, auth_token)
 
-           new_data = file_data.replace(PLACEHOLDER_NAME, birthday["name"] )
-           print(new_data)
-           
-       # 4. Send the letter generated in step 3 to that person's email address.
-       with smtplib.SMTP("smtp.gmail.com", 587) as connection:
-           connection.starttls()
-           connection.login(user=my_email, password=password)
-           connection.sendmail(from_addr=my_email, to_addrs=birthday["email"],
-                                  msg=f"Subject:Happy Birthday\n\n{new_data}")
-
-
-
-
-
-
-
+    message = client.messages \
+        .create(
+        body="It's going to rain today, please bring an umbrella☔",
+        from_='+12295754252',
+        to='+919145480345'
+    )
+    print(message.status)
