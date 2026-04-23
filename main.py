@@ -19,6 +19,8 @@ parameters = {
 response = requests.get(url = URL, params = parameters)
 response.raise_for_status()
 response = response.json()
+FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true 
+ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true
 
 will_rain = False
 for hour_data in response["list"]:
